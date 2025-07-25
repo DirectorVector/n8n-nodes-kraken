@@ -1,48 +1,97 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+# n8n-nodes-kraken
 
-# n8n-nodes-starter
+This package provides n8n community nodes for integrating with the Kraken cryptocurrency exchange API.
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](https://n8n.io). It includes the node linter and other dependencies.
+## Features
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+The Kraken node supports the following operations:
 
-If you would like your node to be available on n8n cloud you can also [submit your node for verification](https://docs.n8n.io/integrations/creating-nodes/deploy/submit-community-nodes/).
+### Market Data
+- Get Asset Info - Retrieve information about assets
+- Get Asset Pairs - Get tradeable asset pairs
+- Get Ticker - Get ticker information for trading pairs
+- Get OHLC Data - Get candlestick/OHLC data
+- Get Order Book - Get order book data
+- Get Recent Trades - Get recent trade history
 
-## Prerequisites
+### Account Operations
+- Get Account Balance - Retrieve account balance
+- Get Trade Balance - Get trade balance information
+- Get Open Orders - List open orders
+- Get Closed Orders - List closed orders
+- Get Trades History - Get account trade history
 
-You need the following installed on your development machine:
+### Trading Operations
+- Add Order - Place buy/sell orders (market or limit)
+- Cancel Order - Cancel existing orders
 
-* [git](https://git-scm.com/downloads)
-* Node.js and npm. Minimum version Node 20. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-  ```
-  npm install n8n -g
-  ```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+## Installation
 
-## Using this starter
+Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+## Credentials
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-   ```
-   git clone https://github.com/<your organization>/<your-repo-name>.git
-   ```
-3. Run `npm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `npm run lint` to check for errors or `npm run lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+You need to create Kraken API credentials:
 
-## More information
+1. Log into your Kraken account
+2. Go to Settings → API
+3. Generate a new API key with the required permissions
+4. Use the API key and secret in n8n
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+### Required Permissions
+
+For basic market data operations, no special permissions are required.
+
+For account and trading operations, you'll need:
+- Query Funds
+- Query Open Orders
+- Query Closed Orders
+- Query Ledger Entries
+- Create & Modify Orders (for trading)
+- Cancel & Close Orders (for trading)
+
+## Usage
+
+1. Add the Kraken node to your workflow
+2. Configure your Kraken API credentials
+3. Select the resource and operation you want to perform
+4. Configure the required parameters
+5. Execute the workflow
+
+## Examples
+
+### Get Bitcoin Price
+- Resource: Market Data
+- Operation: Get Ticker
+- Asset Pair: XXBTZUSD
+
+### Check Account Balance
+- Resource: Account
+- Operation: Get Account Balance
+
+### Place a Market Order
+- Resource: Trading
+- Operation: Add Order
+- Pair: XXBTZUSD
+- Type: Buy
+- Order Type: Market
+- Volume: 0.001
+
+## Supported Asset Pairs
+
+Common asset pairs include:
+- XXBTZUSD (Bitcoin/USD)
+- XETHZUSD (Ethereum/USD)
+- ADAUSD (Cardano/USD)
+- SOLUSD (Solana/USD)
+
+For a complete list, use the "Get Asset Pairs" operation.
+
+## Links
+
+- [Kraken API Documentation](https://docs.kraken.com/rest/)
+- [n8n Community Nodes](https://docs.n8n.io/integrations/community-nodes/)
 
 ## License
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+[MIT](LICENSE.md)

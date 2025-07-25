@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="12" fill="#5741D9"/>
+  <path d="M20 20h24v24H20V20z" fill="white"/>
+  <path d="M25 25h6v6h-6V25z" fill="#5741D9"/>
+  <path d="M33 25h6v6h-6V25z" fill="#5741D9"/>
+  <path d="M25 33h6v6h-6V33z" fill="#5741D9"/>
+  <path d="M33 33h6v6h-6V33z" fill="#5741D9"/>
+  <text x="32" y="50" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">KRAKEN</text>
+</svg>

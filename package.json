@@ -1,19 +1,25 @@
 {
-  "name": "n8n-nodes-<...>",
+  "name": "n8n-nodes-kraken",
   "version": "0.1.0",
-  "description": "",
+  "description": "n8n community node for Kraken cryptocurrency exchange API",
   "keywords": [
-    "n8n-community-node-package"
+    "n8n-community-node-package",
+    "kraken",
+    "cryptocurrency",
+    "trading",
+    "exchange",
+    "crypto",
+    "bitcoin"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/DirectorVector/n8n-nodes-kraken",
   "author": {
-    "name": "",
+    "name": "DirectorVector",
     "email": ""
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/<...>/n8n-nodes-<...>.git"
+    "url": "https://github.com/DirectorVector/n8n-nodes-kraken.git"
   },
   "engines": {
     "node": ">=20.15"
@@ -33,12 +39,10 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/ExampleCredentialsApi.credentials.js",
-      "dist/credentials/HttpBinApi.credentials.js"
+      "dist/credentials/KrakenApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/ExampleNode/ExampleNode.node.js",
-      "dist/nodes/HttpBin/HttpBin.node.js"
+      "dist/nodes/Kraken/Kraken.node.js"
     ]
   },
   "devDependencies": {
@@ -51,5 +55,8 @@
   },
   "peerDependencies": {
     "n8n-workflow": "*"
+  },
+  "dependencies": {
+    "node-kraken-api": "^2.2.2"
   }
 }
