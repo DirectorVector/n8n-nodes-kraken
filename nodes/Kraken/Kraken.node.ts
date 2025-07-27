@@ -7,13 +7,13 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
-import KrakenClient from 'node-kraken-api';
+import { Kraken as KrakenClient } from 'node-kraken-api';
 
 export class Kraken implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Kraken',
 		name: 'kraken',
-		icon: 'file:kraken.svg',
+		icon: 'file:krakenPro.svg',
 		group: ['finance'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -67,31 +67,36 @@ export class Kraken implements INodeType {
 						name: 'Get Asset Info',
 						value: 'getAssetInfo',
 						description: 'Get information about assets',
+						action: 'Get asset info a market data',
 					},
 					{
 						name: 'Get Asset Pairs',
 						value: 'getAssetPairs',
 						description: 'Get tradeable asset pairs',
-					},
-					{
-						name: 'Get Ticker',
-						value: 'getTicker',
-						description: 'Get ticker information',
+						action: 'Get asset pairs a market data',
 					},
 					{
 						name: 'Get OHLC Data',
 						value: 'getOHLC',
 						description: 'Get OHLC (candlestick) data',
+						action: 'Get ohlc data a market data',
 					},
 					{
 						name: 'Get Order Book',
 						value: 'getOrderBook',
 						description: 'Get order book data',
+						action: 'Get order book a market data',
 					},
 					{
 						name: 'Get Recent Trades',
 						value: 'getRecentTrades',
-						description: 'Get recent trades',
+						action: 'Get recent trades a market data',
+					},
+					{
+						name: 'Get Ticker',
+						value: 'getTicker',
+						description: 'Get ticker information',
+						action: 'Get ticker a market data',
 					},
 				],
 				default: 'getTicker',
@@ -111,27 +116,27 @@ export class Kraken implements INodeType {
 					{
 						name: 'Get Account Balance',
 						value: 'getBalance',
-						description: 'Get account balance',
-					},
-					{
-						name: 'Get Trade Balance',
-						value: 'getTradeBalance',
-						description: 'Get trade balance',
-					},
-					{
-						name: 'Get Open Orders',
-						value: 'getOpenOrders',
-						description: 'Get open orders',
+						action: 'Get account balance',
 					},
 					{
 						name: 'Get Closed Orders',
 						value: 'getClosedOrders',
-						description: 'Get closed orders',
+						action: 'Get closed orders',
+					},
+					{
+						name: 'Get Open Orders',
+						value: 'getOpenOrders',
+						action: 'Get open orders',
+					},
+					{
+						name: 'Get Trade Balance',
+						value: 'getTradeBalance',
+						action: 'Get trade balance',
 					},
 					{
 						name: 'Get Trades History',
 						value: 'getTradesHistory',
-						description: 'Get trades history',
+						action: 'Get trades history',
 					},
 				],
 				default: 'getBalance',
@@ -152,11 +157,13 @@ export class Kraken implements INodeType {
 						name: 'Add Order',
 						value: 'addOrder',
 						description: 'Place a new order',
+						action: 'Add order a trading',
 					},
 					{
 						name: 'Cancel Order',
 						value: 'cancelOrder',
 						description: 'Cancel an existing order',
+						action: 'Cancel an existing order',
 					},
 				],
 				default: 'addOrder',
@@ -199,15 +206,15 @@ export class Kraken implements INodeType {
 					},
 				},
 				options: [
-					{ name: '1 minute', value: 1 },
-					{ name: '5 minutes', value: 5 },
-					{ name: '15 minutes', value: 15 },
-					{ name: '30 minutes', value: 30 },
-					{ name: '1 hour', value: 60 },
-					{ name: '4 hours', value: 240 },
-					{ name: '1 day', value: 1440 },
-					{ name: '1 week', value: 10080 },
-					{ name: '15 days', value: 21600 },
+					{ name: '1 Minute', value: 1 },
+					{ name: '5 Minutes', value: 5 },
+					{ name: '15 Minutes', value: 15 },
+					{ name: '30 Minutes', value: 30 },
+					{ name: '1 Hour', value: 60 },
+					{ name: '4 Hours', value: 240 },
+					{ name: '1 Day', value: 1440 },
+					{ name: '1 Week', value: 10080 },
+					{ name: '15 Days', value: 21600 },
 				],
 				default: 60,
 				description: 'Time interval for OHLC data',
@@ -328,11 +335,11 @@ export class Kraken implements INodeType {
 		const credentials = await this.getCredentials('krakenApi');
 		const apiKey = credentials.apiKey as string;
 		const apiSecret = credentials.apiSecret as string;
-		const sandbox = credentials.sandbox as boolean;
 
 		// Initialize Kraken client
-		const kraken = new KrakenClient(apiKey, apiSecret, {
-			hostname: sandbox ? 'api.demo-futures.kraken.com' : 'api.kraken.com',
+		const kraken = new KrakenClient({
+			key: apiKey,
+			secret: apiSecret,
 		});
 
 		for (let i = 0; i < items.length; i++) {
@@ -346,22 +353,22 @@ export class Kraken implements INodeType {
 					switch (operation) {
 						case 'getAssetInfo':
 							const asset = this.getNodeParameter('asset', i) as string;
-							responseData = await kraken.api('Assets', asset ? { asset } : {});
+							responseData = await kraken.assets(asset ? { asset } : {});
 							break;
 
 						case 'getAssetPairs':
-							responseData = await kraken.api('AssetPairs');
+							responseData = await kraken.assetPairs();
 							break;
 
 						case 'getTicker':
 							const tickerPair = this.getNodeParameter('pair', i) as string;
-							responseData = await kraken.api('Ticker', { pair: tickerPair });
+							responseData = await kraken.ticker({ pair: tickerPair });
 							break;
 
 						case 'getOHLC':
 							const ohlcPair = this.getNodeParameter('pair', i) as string;
 							const interval = this.getNodeParameter('interval', i) as number;
-							responseData = await kraken.api('OHLC', {
+							responseData = await kraken.ohlc({
 								pair: ohlcPair,
 								interval,
 							});
@@ -370,7 +377,7 @@ export class Kraken implements INodeType {
 						case 'getOrderBook':
 							const orderBookPair = this.getNodeParameter('pair', i) as string;
 							const count = this.getNodeParameter('count', i) as number;
-							responseData = await kraken.api('Depth', {
+							responseData = await kraken.depth({
 								pair: orderBookPair,
 								count,
 							});
@@ -378,7 +385,7 @@ export class Kraken implements INodeType {
 
 						case 'getRecentTrades':
 							const tradesPair = this.getNodeParameter('pair', i) as string;
-							responseData = await kraken.api('Trades', { pair: tradesPair });
+							responseData = await kraken.trades({ pair: tradesPair });
 							break;
 
 						default:
@@ -391,23 +398,23 @@ export class Kraken implements INodeType {
 				} else if (resource === 'account') {
 					switch (operation) {
 						case 'getBalance':
-							responseData = await kraken.api('Balance');
+							responseData = await kraken.balance();
 							break;
 
 						case 'getTradeBalance':
-							responseData = await kraken.api('TradeBalance');
+							responseData = await kraken.tradeBalance();
 							break;
 
 						case 'getOpenOrders':
-							responseData = await kraken.api('OpenOrders');
+							responseData = await kraken.openOrders();
 							break;
 
 						case 'getClosedOrders':
-							responseData = await kraken.api('ClosedOrders');
+							responseData = await kraken.closedOrders();
 							break;
 
 						case 'getTradesHistory':
-							responseData = await kraken.api('TradesHistory');
+							responseData = await kraken.tradesHistory();
 							break;
 
 						default:
@@ -437,12 +444,12 @@ export class Kraken implements INodeType {
 								orderParams.price = price;
 							}
 
-							responseData = await kraken.api('AddOrder', orderParams);
+							responseData = await kraken.addOrder(orderParams);
 							break;
 
 						case 'cancelOrder':
 							const txid = this.getNodeParameter('txid', i) as string;
-							responseData = await kraken.api('CancelOrder', { txid });
+							responseData = await kraken.cancelOrder({ txid });
 							break;
 
 						default:

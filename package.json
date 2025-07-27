@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-kraken",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "n8n community node for Kraken cryptocurrency exchange API",
   "keywords": [
     "n8n-community-node-package",
@@ -15,11 +15,11 @@
   "homepage": "https://github.com/DirectorVector/n8n-nodes-kraken",
   "author": {
     "name": "DirectorVector",
-    "email": ""
+    "email": "bricethrower@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DirectorVector/n8n-nodes-kraken.git"
+    "url": "git+https://github.com/DirectorVector/n8n-nodes-kraken.git"
   },
   "engines": {
     "node": ">=20.15"

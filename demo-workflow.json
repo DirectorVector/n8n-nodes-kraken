@@ -1,0 +1,113 @@
+{
+  "name": "Kraken Demo Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "7d8a9b2c-1e2f-4a3b-8c9d-0e1f2a3b4c5d",
+      "name": "When clicking 'Test workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "marketData",
+        "operation": "getTicker",
+        "pair": "XXBTZUSD"
+      },
+      "id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+      "name": "Get BTC Price",
+      "type": "n8n-nodes-kraken.kraken",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "krakenApi": {
+          "id": "demo",
+          "name": "Demo Kraken API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "marketData",
+        "operation": "getAssetInfo"
+      },
+      "id": "2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
+      "name": "Get Asset Info",
+      "type": "n8n-nodes-kraken.kraken",
+      "typeVersion": 1,
+      "position": [
+        680,
+        200
+      ],
+      "credentials": {
+        "krakenApi": {
+          "id": "demo",
+          "name": "Demo Kraken API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "marketData",
+        "operation": "getAssetPairs"
+      },
+      "id": "3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
+      "name": "Get Asset Pairs",
+      "type": "n8n-nodes-kraken.kraken",
+      "typeVersion": 1,
+      "position": [
+        680,
+        400
+      ],
+      "credentials": {
+        "krakenApi": {
+          "id": "demo",
+          "name": "Demo Kraken API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking 'Test workflow'": {
+      "main": [
+        [
+          {
+            "node": "Get BTC Price",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get BTC Price": {
+      "main": [
+        [
+          {
+            "node": "Get Asset Info",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Asset Pairs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+  "id": "demo-kraken-workflow",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
