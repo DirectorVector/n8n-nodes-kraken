@@ -276,8 +276,13 @@ export class Kraken implements INodeType {
 					},
 				},
 				options: [
-					{ name: 'Market', value: 'market' },
 					{ name: 'Limit', value: 'limit' },
+					{ name: 'Market', value: 'market' },
+					{ name: 'Settle Position', value: 'settle-position' },
+					{ name: 'Stop Loss', value: 'stop-loss' },
+					{ name: 'Stop Loss Limit', value: 'stop-loss-limit' },
+					{ name: 'Take Profit', value: 'take-profit' },
+					{ name: 'Take Profit Limit', value: 'take-profit-limit' },
 				],
 				default: 'market',
 				required: true,
@@ -305,11 +310,123 @@ export class Kraken implements INodeType {
 					show: {
 						resource: ['trading'],
 						operation: ['addOrder'],
-						orderSubType: ['limit'],
+						orderSubType: ['limit', 'stop-loss-limit', 'take-profit-limit'],
 					},
 				},
 				default: '',
+				required: true,
 				description: 'Price for limit orders',
+			},
+			{
+				displayName: 'Additional Options',
+				name: 'additionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				displayOptions: {
+					show: {
+						resource: ['trading'],
+						operation: ['addOrder'],
+					},
+				},
+				default: {},
+				options: [
+					{
+						displayName: 'Close Order Type',
+						name: 'closeOrderType',
+						type: 'options',
+						options: [
+							{ name: 'Limit', value: 'limit' },
+							{ name: 'Stop Loss', value: 'stop-loss' },
+							{ name: 'Stop Loss Limit', value: 'stop-loss-limit' },
+							{ name: 'Take Profit', value: 'take-profit' },
+							{ name: 'Take Profit Limit', value: 'take-profit-limit' },
+						],
+						default: 'limit',
+						description: 'Conditional close order type',
+					},
+					{
+						displayName: 'Close Price',
+						name: 'closePrice',
+						type: 'string',
+						default: '',
+						description: 'Conditional close order price',
+					},
+					{
+						displayName: 'Close Price 2',
+						name: 'closePrice2',
+						type: 'string',
+						default: '',
+						description: 'Conditional close order secondary price',
+					},
+					{
+						displayName: 'Expire Time',
+						name: 'expiretm',
+						type: 'string',
+						default: '',
+						description: 'Expiration time (Unix timestamp or +&lt;n&gt; for relative time)',
+					},
+					{
+						displayName: 'Leverage',
+						name: 'leverage',
+						type: 'string',
+						default: '',
+						description: 'Amount of leverage desired (default: none)',
+					},
+					{
+						displayName: 'Order Flags',
+						name: 'oflags',
+						type: 'multiOptions',
+						options: [
+							{ name: 'No Market Price Protection', value: 'nompp' },
+							{ name: 'Post Only', value: 'post' },
+							{ name: 'Prefer Fee in Base Currency', value: 'fcib' },
+							{ name: 'Prefer Fee in Quote Currency', value: 'fciq' },
+							{ name: 'Volume in Quote Currency', value: 'viqc' },
+						],
+						default: [],
+						description: 'Order flags (comma-separated)',
+					},
+					{
+						displayName: 'Price 2',
+						name: 'price2',
+						type: 'string',
+						default: '',
+						description: 'Secondary price (for stop-loss and take-profit orders)',
+					},
+					{
+						displayName: 'Start Time',
+						name: 'starttm',
+						type: 'string',
+						default: '',
+						description: 'Scheduled start time (Unix timestamp or +&lt;n&gt; for relative time)',
+					},
+					{
+						displayName: 'Time in Force',
+						name: 'timeinforce',
+						type: 'options',
+						options: [
+							{ name: 'Fill or Kill', value: 'FOK' },
+							{ name: 'Good Till Cancelled', value: 'GTC' },
+							{ name: 'Immediate or Cancel', value: 'IOC' },
+						],
+						default: 'GTC',
+						description: 'Time in force policy',
+					},
+					{
+						displayName: 'User Reference ID',
+						name: 'userref',
+						type: 'number',
+						default: 0,
+						description: 'User reference ID for order tracking',
+					},
+					{
+						displayName: 'Validate Only',
+						name: 'validate',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to validate inputs only. Do not submit order.',
+					},
+				],
 			},
 			{
 				displayName: 'Transaction ID',
@@ -432,6 +549,7 @@ export class Kraken implements INodeType {
 							const ordertype = this.getNodeParameter('orderSubType', i) as string;
 							const volume = this.getNodeParameter('volume', i) as string;
 							const price = this.getNodeParameter('price', i) as string;
+							const additionalOptions = this.getNodeParameter('additionalOptions', i) as any;
 
 							const orderParams: any = {
 								pair,
@@ -440,8 +558,44 @@ export class Kraken implements INodeType {
 								volume,
 							};
 
-							if (ordertype === 'limit' && price) {
+							// Add price for orders that require it
+							if (['limit', 'stop-loss-limit', 'take-profit-limit'].includes(ordertype) && price) {
 								orderParams.price = price;
+							}
+
+							// Add additional options if provided
+							if (additionalOptions.userref !== undefined) {
+								orderParams.userref = additionalOptions.userref;
+							}
+							if (additionalOptions.price2) {
+								orderParams.price2 = additionalOptions.price2;
+							}
+							if (additionalOptions.leverage) {
+								orderParams.leverage = additionalOptions.leverage;
+							}
+							if (additionalOptions.oflags && additionalOptions.oflags.length > 0) {
+								orderParams.oflags = additionalOptions.oflags.join(',');
+							}
+							if (additionalOptions.timeinforce) {
+								orderParams.timeinforce = additionalOptions.timeinforce;
+							}
+							if (additionalOptions.starttm) {
+								orderParams.starttm = additionalOptions.starttm;
+							}
+							if (additionalOptions.expiretm) {
+								orderParams.expiretm = additionalOptions.expiretm;
+							}
+							if (additionalOptions.closeOrderType) {
+								orderParams['close[ordertype]'] = additionalOptions.closeOrderType;
+							}
+							if (additionalOptions.closePrice) {
+								orderParams['close[price]'] = additionalOptions.closePrice;
+							}
+							if (additionalOptions.closePrice2) {
+								orderParams['close[price2]'] = additionalOptions.closePrice2;
+							}
+							if (additionalOptions.validate !== undefined) {
+								orderParams.validate = additionalOptions.validate;
 							}
 
 							responseData = await kraken.addOrder(orderParams);
