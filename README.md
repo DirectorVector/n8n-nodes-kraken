@@ -2,6 +2,14 @@
 
 This package provides n8n community nodes for integrating with the Kraken cryptocurrency exchange API.
 
+> ⚠️ **Disclaimer**
+>
+> This package is considered production-ready for the author's use case, but broader testing is ongoing.
+>
+> While `n8n-nodes-kraken` has proven stable in real-world usage, it has not yet been widely tested across diverse workflows. Users are encouraged to try it out and report any issues or feature requests.
+>
+> **Breaking changes may still occur** as community feedback is incorporated and the feature set evolves.
+
 ## Features
 
 The Kraken node supports the following operations:
