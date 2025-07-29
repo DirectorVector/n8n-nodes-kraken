@@ -29,13 +29,6 @@ export class KrakenApi implements ICredentialType {
 			required: true,
 			description: 'Your Kraken API secret',
 		},
-		{
-			displayName: 'Sandbox Mode',
-			name: 'sandbox',
-			type: 'boolean',
-			default: false,
-			description: 'Whether to use the Kraken sandbox environment for testing',
-		},
 	];
 
 	// The block below tells how this credential can be tested
