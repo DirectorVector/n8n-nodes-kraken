@@ -10,7 +10,7 @@ const mockKraken = {
     addOrder: (params) => {
         console.log('AddOrder called with parameters:');
         console.log(JSON.stringify(params, null, 2));
-        
+
         // Verify all parameters are properly passed
         const expectedParams = [
             'pair', 'type', 'ordertype', 'volume', 'price',
@@ -18,20 +18,20 @@ const mockKraken = {
             'starttm', 'expiretm', 'close[ordertype]', 'close[price]',
             'close[price2]', 'validate'
         ];
-        
+
         const presentParams = Object.keys(params);
         const missingExpected = expectedParams.filter(param => !presentParams.includes(param));
-        
+
         console.log('\n📊 Parameter Analysis:');
         console.log('Present parameters:', presentParams.length);
         console.log('Expected parameters:', expectedParams.length);
-        
+
         if (missingExpected.length > 0) {
             console.log('❌ Missing expected parameters:', missingExpected);
         } else {
             console.log('✅ All expected parameters are present!');
         }
-        
+
         // Check parameter values
         console.log('\n🔍 Parameter Values:');
         console.log('- pair:', params.pair);
@@ -42,7 +42,7 @@ const mockKraken = {
         console.log('- userref:', params.userref);
         console.log('- oflags:', params.oflags);
         console.log('- validate:', params.validate);
-        
+
         return Promise.resolve({ result: 'mock-order-id' });
     }
 };
@@ -95,11 +95,11 @@ const mockContext = {
 
 async function testAddOrderOptions() {
     console.log('🧪 Testing addOrder with all available options...\n');
-    
+
     try {
         const krakenNode = new Kraken();
         const result = await krakenNode.execute.call(mockContext);
-        
+
         console.log('\n✅ Test completed successfully!');
         console.log('📤 Final result:', JSON.stringify(result, null, 2));
     } catch (error) {
