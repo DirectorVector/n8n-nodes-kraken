@@ -196,6 +196,53 @@ export class Kraken implements INodeType {
 				description: 'Comma-separated list of assets to get info for (leave empty for all)',
 			},
 			{
+				displayName: 'Asset Pairs',
+				name: 'assetPairs',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['marketData'],
+						operation: ['getAssetPairs'],
+					},
+				},
+				default: '',
+				description:
+					'Asset pairs to get data for (e.g., BTC/USD,ETH/BTC). Leave empty for all pairs.',
+			},
+			{
+				displayName: 'Info Type',
+				name: 'infoType',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: ['marketData'],
+						operation: ['getAssetPairs'],
+					},
+				},
+				options: [
+					{ name: 'All Info', value: 'info' },
+					{ name: 'Leverage Info', value: 'leverage' },
+					{ name: 'Fees Schedule', value: 'fees' },
+					{ name: 'Margin Info', value: 'margin' },
+				],
+				default: 'info',
+				description: 'Type of information to retrieve',
+			},
+			{
+				displayName: 'Country Code',
+				name: 'countryCode',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['marketData'],
+						operation: ['getAssetPairs'],
+					},
+				},
+				default: '',
+				description:
+					'ISO 3166-1 alpha-2 country code to filter pairs available in specific country/region (e.g., GB)',
+			},
+			{
 				displayName: 'Interval',
 				name: 'interval',
 				type: 'options',
