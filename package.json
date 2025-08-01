@@ -37,6 +37,8 @@
     "test:enhanced": "node test-asset-pairs.js",
     "test:comprehensive": "node test-comprehensive.js",
     "test:ci": "npm run lint && npm run format:check && npm run build && npm run test",
+    "security": "npm audit --audit-level high",
+    "security:fix": "npm audit fix",
     "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
   },
   "files": [
@@ -61,6 +63,9 @@
   },
   "peerDependencies": {
     "n8n-workflow": "*"
+  },
+  "overrides": {
+    "form-data": "^4.0.4"
   },
   "dependencies": {
     "node-kraken-api": "^2.2.2"
