@@ -521,7 +521,23 @@ export class Kraken implements INodeType {
 							break;
 
 						case 'getAssetPairs':
-							responseData = await kraken.assetPairs();
+							const assetPairs = this.getNodeParameter('assetPairs', i) as string;
+							const infoType = this.getNodeParameter('infoType', i) as string;
+							const countryCode = this.getNodeParameter('countryCode', i) as string;
+
+							const assetPairsParams: any = {};
+
+							if (assetPairs) {
+								assetPairsParams.pair = assetPairs;
+							}
+							if (infoType && infoType !== 'info') {
+								assetPairsParams.info = infoType;
+							}
+							if (countryCode) {
+								assetPairsParams.country_code = countryCode;
+							}
+
+							responseData = await kraken.assetPairs(assetPairsParams);
 							break;
 
 						case 'getTicker':
