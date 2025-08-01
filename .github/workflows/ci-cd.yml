@@ -8,6 +8,13 @@ on:
   release:
     types: [ published ]
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  actions: read
+  security-events: write
+
 jobs:
   test:
     name: Test and Lint
@@ -127,7 +134,7 @@ jobs:
     name: PR Test Results
     needs: [test]
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && always()
 
     steps:
     - name: Comment PR
@@ -145,23 +152,27 @@ jobs:
             comment.body.includes('🧪 Test Results')
           );
 
+          const testsPassed = '${{ needs.test.result }}' === 'success';
+          const status = testsPassed ? '✅' : '❌';
+          const statusText = testsPassed ? 'All tests passed successfully!' : 'Some tests failed. Please check the logs.';
+
           const body = `## 🧪 Test Results
 
-          ✅ **All tests passed successfully!**
+          ${status} **${statusText}**
 
           ### Test Coverage
-          - ✅ Linting and formatting checks
-          - ✅ TypeScript compilation
-          - ✅ Kraken API connectivity tests
-          - ✅ Enhanced Asset Pairs functionality
-          - ✅ Comprehensive integration tests
-          - ✅ Security audit
+          - ${status} Linting and formatting checks
+          - ${status} TypeScript compilation
+          - ${status} Kraken API connectivity tests
+          - ${status} Enhanced Asset Pairs functionality
+          - ${status} Comprehensive integration tests
+          - ${status} Security audit
 
           ### Build Status
-          - ✅ Build artifacts generated successfully
-          - ✅ Node.js compatibility verified (20.x, 22.x)
+          - ${status} Build artifacts generated successfully
+          - ${status} Node.js compatibility verified (20.x, 22.x)
 
-          The code is ready for review and merge! 🚀
+          ${testsPassed ? 'The code is ready for review and merge! 🚀' : 'Please fix the failing tests before merging. 🔧'}
           `;
 
           if (botComment) {

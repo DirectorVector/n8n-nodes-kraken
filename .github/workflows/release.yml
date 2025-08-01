@@ -24,6 +24,12 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  actions: read
+
 jobs:
   create-release:
     name: Create Release
