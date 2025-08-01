@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-kraken",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "n8n community node for Kraken cryptocurrency exchange API",
   "keywords": [
     "n8n-community-node-package",
