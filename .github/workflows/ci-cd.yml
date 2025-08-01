@@ -95,6 +95,7 @@ jobs:
     name: Publish to NPM
     needs: [test, security]
     runs-on: ubuntu-latest
+    environment: prod
     if: github.event_name == 'release' && github.event.action == 'published'
 
     steps:
