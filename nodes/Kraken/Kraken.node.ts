@@ -677,11 +677,9 @@ export class Kraken implements INodeType {
 							);
 					}
 				} else {
-					throw new NodeOperationError(
-						this.getNode(),
-						`The resource "${resource}" is not known!`,
-						{ itemIndex: i },
-					);
+					throw new NodeOperationError(this.getNode(), `The resource "${resource}" is not known!`, {
+						itemIndex: i,
+					});
 				}
 
 				returnData.push({
