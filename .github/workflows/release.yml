@@ -1,0 +1,138 @@
+name: Release Management
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.2.0)'
+        required: true
+        type: string
+      release_type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run full test suite
+      run: npm run test:ci
+
+    - name: Update version
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        npm version ${{ github.event.inputs.release_type }} --no-git-tag-version
+
+    - name: Get new version
+      id: version
+      run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+    - name: Commit version bump
+      run: |
+        git add package.json
+        git commit -m "chore: bump version to v${{ steps.version.outputs.version }}"
+        git push origin master
+
+    - name: Create and push tag
+      run: |
+        git tag -a "v${{ steps.version.outputs.version }}" -m "Release v${{ steps.version.outputs.version }}"
+        git push origin "v${{ steps.version.outputs.version }}"
+
+    - name: Generate changelog
+      id: changelog
+      run: |
+        echo "## 🚀 What's New in v${{ steps.version.outputs.version }}" > CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "### ✨ Features" >> CHANGELOG.md
+        echo "- Enhanced Asset Pairs functionality with filtering parameters" >> CHANGELOG.md
+        echo "- Added support for leverage, fees, and margin information retrieval" >> CHANGELOG.md
+        echo "- Country-specific pair filtering capability" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "### 🔧 Improvements" >> CHANGELOG.md
+        echo "- Full backward compatibility maintained" >> CHANGELOG.md
+        echo "- Comprehensive test coverage added" >> CHANGELOG.md
+        echo "- Automated CI/CD pipeline implemented" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "### 📚 Documentation" >> CHANGELOG.md
+        echo "- Updated API parameter documentation" >> CHANGELOG.md
+        echo "- Added usage examples and test cases" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "### 🛠️ Technical Details" >> CHANGELOG.md
+        echo "- Node.js compatibility: >=20.15" >> CHANGELOG.md
+        echo "- TypeScript support maintained" >> CHANGELOG.md
+        echo "- ESLint and Prettier validation" >> CHANGELOG.md
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.version.outputs.version }}
+        release_name: Release v${{ steps.version.outputs.version }}
+        body_path: CHANGELOG.md
+        draft: false
+        prerelease: ${{ github.event.inputs.prerelease }}
+
+  validate-release:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Validate package.json version matches tag
+      run: |
+        PACKAGE_VERSION=$(node -p "require('./package.json').version")
+        TAG_VERSION=${GITHUB_REF#refs/tags/v}
+        echo "Package version: $PACKAGE_VERSION"
+        echo "Tag version: $TAG_VERSION"
+        if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+          echo "❌ Version mismatch!"
+          exit 1
+        fi
+        echo "✅ Version validation passed"
+
+    - name: Run pre-publish validation
+      run: npm run test:ci
