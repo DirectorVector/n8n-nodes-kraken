@@ -29,8 +29,14 @@
     "build": "npx rimraf dist && tsc && gulp build:icons",
     "dev": "tsc --watch",
     "format": "prettier nodes credentials --write",
+    "format:check": "prettier nodes credentials --check",
     "lint": "eslint nodes credentials package.json",
     "lintfix": "eslint nodes credentials package.json --fix",
+    "test": "npm run test:api && npm run test:enhanced && npm run test:comprehensive",
+    "test:api": "node test-node.js",
+    "test:enhanced": "node test-asset-pairs.js",
+    "test:comprehensive": "node test-comprehensive.js",
+    "test:ci": "npm run lint && npm run format:check && npm run build && npm run test",
     "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
   },
   "files": [
