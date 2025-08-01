@@ -38,13 +38,13 @@ jobs:
 
     - name: Build project
       run: npm run build
-      
+
     - name: Security audit
       run: npm audit --audit-level high
-      
+
     - name: Run all tests
       run: npm run test
-      
+
     - name: Verify build artifacts
       run: |
         echo "Verifying build artifacts exist..."
